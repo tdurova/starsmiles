@@ -17,3 +17,13 @@ docker_interactive:
 
 docker_deploy:
   gcloud run deploy --image ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GAR_REPO}/${GAR_IMAGE}:prod --memory ${GAR_MEMORY} --region ${GCP_REGION}
+
+#TESTS
+
+default: pylint pytest
+
+pylint:
+    find . -iname "*.py" -not -path "./tests/*" | xargs -n1 -I {}  pylint --output-format=colorized {}; true
+
+pytest:
+    PYTHONDONTWRITEBYTECODE=1 pytest -v --color=yes
