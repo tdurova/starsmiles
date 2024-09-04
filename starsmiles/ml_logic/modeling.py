@@ -1,49 +1,57 @@
 import tensorflow as tf
-from tensorflow.keras import layers, models, callbacks
+from tensorflow.keras import layers, callbacks, _optimizers
+from tf.keras.models import Model, Sequential
 
 def build_model(input_shape=(64, 64, 1)):
     """
     Builds a Convolutional Neural Network (CNN) for binary image classification.
     """
 
-    model = models.Sequential()
+    model = Sequential()
 
-    # Rescaling layer for normalization
-    model.add(layers.InputLayer(input_shape=input_shape))
+    # Define the input shape explicitly using Input
+    model.add(Input(shape=input_shape))
+
+    # Rescaling layer for grayscale images
     model.add(layers.Rescaling(1./255))
 
     # First Convolutional Block
-    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
-    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(filters=32, kernel_size=(3, 3), activation="relu", padding="same"))
+    model.add(layers.MaxPooling2D(pool_size=(2, 2)))
 
-    # Second Convolutional Block
-    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
-    model.add(layers.MaxPooling2D((2, 2)))
+    #Second Convolutional Block
+    model.add(layers.Conv2D(filters=32, kernel_size=(3, 3), activation="relu", padding="same"))
+    model.add(layers.MaxPooling2D(pool_size=(2, 2)))
 
     # Third Convolutional Block
-    model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
-    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(filters=64, kernel_size=(3, 3), activation="relu", padding="same"))
+    model.add(layers.MaxPooling2D(pool_size=(2, 2)))
 
     # Fourth Convolutional Block
-    model.add(layers.Conv2D(128, (3, 3), activation='relu', padding='same'))
-    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(filters=128, kernel_size=(3, 3), activation="relu", padding="same"))
+    model.add(layers.MaxPooling2D(pool_size=(2, 2)))
 
-    # Flatten and Dense Layers
+    # Flattening the output
     model.add(layers.Flatten())
-    model.add(layers.Dense(64, activation='relu'))
-    model.add(layers.Dropout(0.5))  # Dropout for regularization
 
-    # Output layer with sigmoid activation for binary classification
-    model.add(layers.Dense(1, activation='sigmoid'))
+    # Fully Connected Dense Layer
+    model.add(layers.Dense(64, activation="relu"))
 
-    # Compile the model
-    model.compile(optimizer='adam',
-                  loss='binary_crossentropy',
-                  metrics=['accuracy'])
+    # Dropout Layer for regularization
+    model.add(layers.Dropout(0.5))
+
+    # Output Layer with Softmax
+    model.add(layers.Dense(5, activation="softmax"))
 
     return model
 
-def create_callbacks(model_name="model_1"):
+def compile_model(model):
+    adam = optimizers.Adam(learning_rate = 0.001)
+    return model.compile(loss='categorical_crossentropy',
+              optimizer= adam,
+              metrics=['accuracy'])
+
+def create_callbacks(model_name="model"):
     """
     Creates a list of callbacks for training.
     """
@@ -65,7 +73,7 @@ def create_callbacks(model_name="model_1"):
 
     return [model_checkpoint, lr_reducer, early_stopper]
 
-def train_model(model, train_ds, valid_ds, model_name="model_1", epochs=30):
+def train_model(model, train_ds, valid_ds, model_name="mode1", epochs=30):
     """
     Trains the CNN model using the provided training and validation datasets.
     """
