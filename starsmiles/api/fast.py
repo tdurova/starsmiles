@@ -5,7 +5,7 @@ import tensorflow as tf
 app = FastAPI()
 
 # Load the pre-trained model
-MODEL_PATH = "models/model.h5"
+MODEL_PATH = "../models/model.h5"
 model = tf.keras.models.load_model(MODEL_PATH)
 
 # Define the input data structure using Pydantic
