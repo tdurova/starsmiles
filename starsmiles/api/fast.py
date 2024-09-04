@@ -5,7 +5,7 @@ import tensorflow as tf
 app = FastAPI()
 
 # Load the pre-trained model
-MODEL_PATH = "path_to_your_model/model.h5"
+MODEL_PATH = "models/model.h5"
 model = tf.keras.models.load_model(MODEL_PATH)
 
 # Define the input data structure using Pydantic
@@ -14,7 +14,7 @@ class InputData(BaseModel):
 
 @app.get("/")
 def root():
-    return {"message": "Welcome to the StarSmiles API!"}
+    return {"message": "Welcome to the StarSmiles Model API!"}
 
 @app.post("/predict")
 def predict(input_data: InputData):
