@@ -81,4 +81,8 @@ def train_model(model, train_ds, valid_ds, model_name="model_1", epochs=30):
         callbacks=callbacks_list
     )
 
+        # Save the model
+    MODEL_PATH = "../models/model.h5"
+    model.save(MODEL_PATH)
+
     return history
