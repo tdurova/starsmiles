@@ -16,6 +16,13 @@
 # Ignore VS Code generated files
 *.vscode
 
+# Ignore models directory in notebooks
+notebooks/debug_models/
+
+# Ignore data directories
+data/raw/
+data/processed/
+
 # Raw data
 raw_data/
 *.csv
@@ -42,6 +49,3 @@ models/
 .credentials
 secrets.toml
 *.json
-
-# User defined extras
-# Complete to your desire
