@@ -1,12 +1,15 @@
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import tensorflow as tf
 
+from ml_logic import ImageProcessor, ModelPredictor
+
 app = FastAPI()
 
-# Load the pre-trained model
-MODEL_PATH = "models/dental_model.keras"
-model = tf.keras.models.load_model(MODEL_PATH)
+# Initialize the processor and predictor
+processor = ImageProcessor()
+predictor = ModelPredictor('models/dental_model.keras')
 
 # Define the input data structure using Pydantic
 class InputData(BaseModel):
@@ -23,7 +26,22 @@ def predict(input_data: InputData):
     image_array = tf.reshape(image_array, (1, 64, 64, 1))  # Adjust for grayscale image
 
     # Get model prediction
-    prediction = model.predict(image_array)
+    prediction = predictor.predict(image_array)
     result = "Positive" if prediction[0] > 0.5 else "Negative"
 
     return {"prediction": result}
+
+@app.post('/upload_image')
+async def receive_image(img: UploadFile = File(...)):
+    # Receiving and decoding the image
+    contents = await img.read()
+    image = Image.open(BytesIO(contents))
+
+    # Preprocess the image
+    preprocessed_image = processor.preproc_image(image)
+
+    # Get model prediction
+    prediction = predictor.predict(preprocessed_image)
+
+    # Respond with the prediction result as JSON
+    return JSONResponse(content={"prediction": prediction})
