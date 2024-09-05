@@ -16,10 +16,10 @@ if not model_path or not os.path.exists(model_path):
 # Load your pre-trained model
 model = tf.keras.models.load_model(model_path)
 
-def load_image(path_to_image: str) -> Image:
+def load_image(path_to_image: str) -> Image.Image:
     return Image.open(path_to_image)
 
-def preproc_image(image: Image):
+def preproc_image(image: Image.Image) -> tf.Tensor:
     img = img_to_array(image)
 
     if img.shape[:2] != (64, 64):
@@ -29,11 +29,7 @@ def preproc_image(image: Image):
 
     return img
 
-def load_model():
-    from tensorflow.keras.models import load_model
-    return load_model(model_path)
-
-def predict(img, model=load_model()) -> None:
+def predict(img: tf.Tensor) -> str:
     p = np.expand_dims(img, axis=0)
     pred = model.predict(p)
 
@@ -49,6 +45,6 @@ def predict(img, model=load_model()) -> None:
             prediction = class_names[i]
 
     if prediction is not None:
-        print(f'Prediction is: {prediction}')
+        return f'Prediction is: {prediction}'
     else:
-        print('The model can not predict with enough confidence')
+        return 'The model can not predict with enough confidence'
