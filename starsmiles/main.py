@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from starsmiles.ml_logic.proc_pred import load_image, preproc_image, predict
+from starsmiles.proc_pred import load_image, preproc_image, predict
 
 def make_prediction()-> None:
 

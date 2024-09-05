@@ -6,12 +6,12 @@ with open("requirements.txt") as f:
 requirements = [x.strip() for x in content if "git+" not in x]
 
 setup(name='starsmiles',
-      version="0.0.",
-      description="Starsmiles predictions with the previously trained model",
-      license="MIT",
+      version="0.0.0",
+      description="Starsmiles model - Predictions with a trained model",
+      license="MIT",#???
       author="Tanja Durova",
-      author_email="contact@lewagon.org",
-      #url="https://github.com/lewagon/taxi-fare",
+      author_email="tatyana.durova@gmail.com",
+      url="https://github.com/tdurova/starsmiles",
       install_requires=requirements,
       packages=find_packages(),
       test_suite="tests",

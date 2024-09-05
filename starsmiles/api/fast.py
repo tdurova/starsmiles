@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from PIL import Image
 from io import BytesIO
 
-from starsmiles.ml_logic.proc_pred import preproc_image, predict
+from starsmiles.proc_pred import preproc_image, predict
 
 app = FastAPI()
 
