@@ -27,3 +27,8 @@ pylint:
 
 pytest:
     PYTHONDONTWRITEBYTECODE=1 pytest -v --color=yes
+
+#FAST API
+
+fast_api:
+		uvicorn starsmiles.api.fast:app --reload

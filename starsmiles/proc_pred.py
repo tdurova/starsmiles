@@ -38,6 +38,7 @@ def predict(img: tf.Tensor) -> str:
     prediction = None
 
     for i in range(len(pred[0])):
+
         print(f'Probability of {class_names[i]}: {round(100 * pred[0, i], 2)}%')
 
         if pred[0, i] > threshold:
@@ -45,6 +46,8 @@ def predict(img: tf.Tensor) -> str:
             prediction = class_names[i]
 
     if prediction is not None:
-        return f'Prediction is: {prediction}'
+        print(f'Prediction is: {prediction}')
     else:
-        return 'The model can not predict with enough confidence'
+        print('The model can not predict with enough confidence')
+
+    return pred
