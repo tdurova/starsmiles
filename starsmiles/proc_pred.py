@@ -17,9 +17,12 @@ if not model_path or not os.path.exists(model_path):
 model = tf.keras.models.load_model(model_path)
 
 def load_image(path_to_image: str) -> Image.Image:
+    '''Load the image to predict'''
     return Image.open(path_to_image)
 
 def preproc_image(image: Image.Image) -> tf.Tensor:
+    '''Preprocess the image adapting size and layers
+    to make it compatible with the model'''
     img = img_to_array(image)
 
     if img.shape[:2] != (64, 64):
@@ -29,7 +32,9 @@ def preproc_image(image: Image.Image) -> tf.Tensor:
 
     return img
 
-def predict(img: tf.Tensor) -> str:
+def predict(img: tf.Tensor) -> np.array:
+    '''Make a prediction with the
+    loaded image and print the results'''
     p = np.expand_dims(img, axis=0)
     pred = model.predict(p)
 
