@@ -1,34 +1,25 @@
-gar_creation:
-	gcloud auth configure-docker ${GCP_REGION}-docker.pkg.dev
-	gcloud artifacts repositories create ${GAR_REPO} --repository-format=docker \
-	--location=${GCP_REGION} --description="Repository for storing ${GAR_REPO} images"
+.PHONY: docker_build docker_run docker_interactive pylint pytest run_api
 
 docker_build:
-	docker build --platform linux/amd64 -t ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GAR_REPO}/${GAR_IMAGE}:prod .
-
-docker_push:
-	docker push ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GAR_REPO}/${GAR_IMAGE}:prod
+	docker build --platform linux/amd64 -t my-fastapi-app:local .
 
 docker_run:
-	docker run -e PORT=8000 -p 8000:8000 --env-file .env ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GAR_REPO}/${GAR_IMAGE}:prod
+	docker run -d -p 8000:8000 --env-file .env --name my-fastapi-container my-fastapi-app:local
 
 docker_interactive:
-	docker run -it --env-file .env ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GAR_REPO}/${GAR_IMAGE}:prod /bin/bash
+	docker run -it --env-file .env my-fastapi-app:local /bin/bash
 
-docker_deploy:
-	gcloud run deploy --image ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GAR_REPO}/${GAR_IMAGE}:prod --memory ${GAR_MEMORY} --region ${GCP_REGION}
-
-#TESTS
+# TESTS
 
 default: pylint pytest
 
 pylint:
-	find . -iname "*.py" -not -path "./tests/*" | xargs -n1 -I {}  pylint --output-format=colorized {}; true
+	find . -iname "*.py" -not -path "./tests/*" | xargs -n1 -I {} pylint --output-format=colorized {}; true
 
 pytest:
 	PYTHONDONTWRITEBYTECODE=1 pytest -v --color=yes
 
-#FAST API
+# FAST API
 
 run_api:
 	uvicorn starsmiles.api.fast:app --reload
