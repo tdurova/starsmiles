@@ -6,6 +6,7 @@ WORKDIR /app
 
 # Copy the required files to the container
 COPY starsmiles/api/ ./starsmiles/api
+COPY starsmiles/ml_logic/ ./starsmiles/ml_logic
 COPY models/ ./models
 COPY requirements.txt ./requirements.txt
 
