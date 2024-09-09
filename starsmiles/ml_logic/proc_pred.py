@@ -29,6 +29,10 @@ def preproc_image(image: Image.Image) -> tf.Tensor:
 
     return img
 
+def load_model():
+    from tensorflow.keras.models import load_model
+    return load_model(model_path)
+
 def predict(img: tf.Tensor) -> str:
     p = np.expand_dims(img, axis=0)
     pred = model.predict(p)
@@ -36,15 +40,17 @@ def predict(img: tf.Tensor) -> str:
     class_names = ['Cavity', 'Fillings', 'Impacted Tooth', 'Implant', 'Normal']
     threshold = 0.5
     prediction = None
+    probability = 0.0
 
     for i in range(len(pred[0])):
-        print(f'Probability of {class_names[i]}: {round(100 * pred[0, i], 2)}%')
+        # print(f'Probability of {class_names[i]}: {round(100 * pred[0, i], 2)}%')
 
         if pred[0, i] > threshold:
             threshold = pred[0, i]
             prediction = class_names[i]
+            probability = pred[0, i]
 
     if prediction is not None:
-        return f'Prediction is: {prediction}'
+        return f'Prediction is: {prediction} with a probability of {round(100 * probability, 2)}%'
     else:
         return 'The model can not predict with enough confidence'

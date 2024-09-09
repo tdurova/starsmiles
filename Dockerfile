@@ -5,7 +5,7 @@ FROM python:3.10-slim-buster
 WORKDIR /app
 
 # Copy the required files to the container
-COPY api/ ./api
+COPY starsmiles/api/ ./starsmiles/api
 COPY models/ ./models
 COPY requirements.txt ./requirements.txt
 
@@ -14,4 +14,4 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 # Run the FastAPI app with Uvicorn
-CMD ["uvicorn", "api.fast:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "starsmiles.api.fast:app", "--host", "0.0.0.0", "--port", "8000"]
