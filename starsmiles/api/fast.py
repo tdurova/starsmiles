@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from PIL import Image
 from io import BytesIO
 
-from starsmiles.proc_pred import preproc_image, predict
+from starsmiles.proc_pred import preprocess_image, predict
 
 app = FastAPI()
 
@@ -18,10 +18,12 @@ async def predict_endpoint(img: UploadFile = File(...)):
     image = Image.open(BytesIO(contents))
 
     # Preprocess the image
-    preprocessed_image = preproc_image(image)
+    preprocessed_image = preprocess_image(image)
 
     # Get model prediction
     prediction = predict(preprocessed_image)
+
+    print(prediction)
 
     # Respond with the prediction result as JSON
     return JSONResponse(content={"cavity": float(prediction[0][0]),
