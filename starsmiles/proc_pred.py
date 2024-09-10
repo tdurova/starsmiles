@@ -5,6 +5,10 @@ from PIL import Image
 from tensorflow.keras.preprocessing.image import smart_resize
 from tensorflow.image import rgb_to_grayscale
 import tensorflow as tf
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
 
 # Load the model path from the environment variable
 root_path = os.path.dirname(os.path.dirname(__file__))
@@ -20,48 +24,83 @@ if not model_path or not os.path.exists(model_path):
 # Load your pre-trained model
 model = tf.keras.models.load_model(model_path)
 
-def load_image(path_to_image: str) -> Image.Image:
-    '''Load the image to predict'''
-    return Image.open(path_to_image)
+def load_image(image_path: str) -> Image.Image:
+    """
+    Load the image to predict.
 
-def preproc_image(image: Image.Image) -> tf.Tensor:
-    '''Preprocess the image adapting size and layers
-    to make it compatible with the model'''
-    img = img_to_array(image)
+    Args:
+        image_path (str): Path to the image file.
 
-    if img.shape[:2] != (64, 64):
-        img = smart_resize(img, (64, 64))
-    if img.shape[2] != 1:
-        img = rgb_to_grayscale(img)
+    Returns:
+        Image.Image: Loaded image.
+    """
+    try:
+        return Image.open(image_path)
+    except Exception as e:
+        logging.error(f"Error loading image: {e}")
+        raise
 
-    return img
+def preprocess_image(image: Image.Image) -> tf.Tensor:
+    """
+    Preprocess the image to make it compatible with the model.
 
-def load_model():
-    from tensorflow.keras.models import load_model
-    return load_model(model_path)
+    Args:
+        image (Image.Image): Image to preprocess.
 
-def predict(img: tf.Tensor) -> str:
-    p = np.expand_dims(img, axis=0)
-    pred = model.predict(p)
+    Returns:
+        tf.Tensor: Preprocessed image tensor.
+    """
+    try:
+        img_array = img_to_array(image)
 
-    return pred
+        # Resize image if necessary
+        if img_array.shape[:2] != (64, 64):
+            img_array = smart_resize(img_array, (64, 64))
 
-    class_names = ['Cavity', 'Fillings', 'Impacted Tooth', 'Implant', 'Normal']
-    threshold = 0.5
-    prediction = None
-    probability = 0.0
+        # Convert to grayscale if necessary
+        if img_array.shape[2] != 1:
+            img_array = rgb_to_grayscale(img_array)
 
-    for i in range(len(pred[0])):
-        # print(f'Probability of {class_names[i]}: {round(100 * pred[0, i], 2)}%')
+        return img_array
+    except Exception as e:
+        logging.error(f"Error preprocessing image: {e}")
+        raise
 
-        if pred[0, i] > threshold:
-            threshold = pred[0, i]
-            prediction = class_names[i]
-            probability = pred[0, i]
+def predict(image_tensor: tf.Tensor) -> str:
+    """
+    Make a prediction with the preprocessed image and return the results.
 
-    if prediction is not None:
-        return f'Prediction is: {prediction} with a probability of {round(100 * probability, 2)}%'
-    else:
-        print('The model can not predict with enough confidence')
+    Args:
+        image_tensor (tf.Tensor): Preprocessed image tensor.
 
-    return pred
+    Returns:
+        str: Prediction result with class name and probability.
+    """
+    try:
+        # Expand dimensions to match model input
+        input_tensor = np.expand_dims(image_tensor, axis=0)
+        predictions = model.predict(input_tensor)
+
+        return predictions
+
+        class_names = ['Cavity', 'Fillings', 'Impacted Tooth', 'Implant', 'Normal']
+        threshold = 0.5
+        best_prediction = None
+        best_probability = 0.0
+
+        # Iterate over predictions to find the best one
+        for i, probability in enumerate(predictions[0]):
+            logging.info(f'Probability of {class_names[i]}: {round(100 * probability, 2)}%')
+
+            if probability > threshold:
+                threshold = probability
+                best_prediction = class_names[i]
+                best_probability = probability
+
+        if best_prediction is not None:
+            return f'Prediction is: {best_prediction} with a probability of {round(100 * best_probability, 2)}%'
+        else:
+            return 'The model cannot predict with enough confidence'
+    except Exception as e:
+        logging.error(f"Error during prediction: {e}")
+        raise
