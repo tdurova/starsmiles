@@ -23,6 +23,8 @@ async def predict_endpoint(img: UploadFile = File(...)):
     # Get model prediction
     prediction = predict(preprocessed_image)
 
+    print(prediction)
+
     # Respond with the prediction result as JSON
     return JSONResponse(content={"cavity": float(prediction[0][0]),
                                  'fillings': float(prediction[0][1]),

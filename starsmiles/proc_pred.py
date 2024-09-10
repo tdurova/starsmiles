@@ -7,7 +7,11 @@ from tensorflow.image import rgb_to_grayscale
 import tensorflow as tf
 
 # Load the model path from the environment variable
-model_path = os.getenv('MODEL_PATH')
+root_path = os.path.dirname(os.path.dirname(__file__))
+
+model_path = os.path.join(root_path, 'models', 'model.keras')
+
+print(model_path)
 
 # Check if the model file exists
 if not model_path or not os.path.exists(model_path):
@@ -39,6 +43,8 @@ def load_model():
 def predict(img: tf.Tensor) -> str:
     p = np.expand_dims(img, axis=0)
     pred = model.predict(p)
+
+    return pred
 
     class_names = ['Cavity', 'Fillings', 'Impacted Tooth', 'Implant', 'Normal']
     threshold = 0.5
