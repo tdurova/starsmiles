@@ -1,11 +1,15 @@
-.PHONY: docker_build docker_run docker_interactive pylint pytest run_api
+.PHONY: docker_build docker_build_no_cache docker_run docker_interactive pylint pytest run_api
 
 # Define the Docker image name as a variable
 IMAGE_NAME = my-fastapi-app:local
 
-# Build Docker image if not built yet
+# Build Docker image if not built yet (uses cache)
 docker_build:
 	docker build --platform linux/amd64 -t $(IMAGE_NAME) .
+
+# Build Docker image without using cache
+docker_build_no_cache:
+	docker build --platform linux/amd64 --no-cache -t $(IMAGE_NAME) .
 
 # Run Docker container in detached mode
 docker_run:
