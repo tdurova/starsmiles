@@ -11,7 +11,11 @@ from tensorflow.image import rgb_to_grayscale
 logging.basicConfig(level=logging.INFO)
 
 # Load the model path from the environment variable
-model_path = os.getenv('MODEL_PATH')
+root_path = os.path.dirname(os.path.dirname(__file__))
+
+model_path = os.path.join(root_path, 'models', 'model.keras')
+
+print(model_path)
 
 # Check if the model file exists
 if not model_path or not os.path.exists(model_path):
@@ -77,6 +81,8 @@ def predict(image_tensor: tf.Tensor, threshold: float = 0.5) -> str:
         # Expand dimensions to match model input
         input_tensor = np.expand_dims(image_tensor, axis=0)
         predictions = model.predict(input_tensor)
+
+        return predictions
 
         class_names = ['Cavity', 'Fillings', 'Impacted Tooth', 'Implant', 'Normal']
         best_prediction = None
